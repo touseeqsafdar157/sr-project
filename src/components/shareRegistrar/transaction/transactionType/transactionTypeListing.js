@@ -1,0 +1,140 @@
+import React, { Fragment, useState, useEffect } from "react";
+import Breadcrumb from "../../../common/breadcrumb";
+import { getTransactionTypes } from "../../../../store/services/transaction.service";
+import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Modal, ModalHeader, ModalBody } from "reactstrap";
+import AddTransactionType from "./addTransactionType";
+import EditTransactionType from "./editTransactionType";
+
+export default function TransactionTypeListing() {
+  const [data, setData] = useState([]);
+
+  const [viewAddPage, setViewAddPage] = useState(false);
+  const [viewEditPage, setViewEditPage] = useState(false);
+
+  let history = useHistory();
+  useEffect(() => {
+    const email = sessionStorage.getItem("email");
+    const getAllChecklist = async () => {
+      try {
+        const response = await getTransactionTypes(email);
+
+        setData(response.data.data);
+      } catch (error) {
+        toast.error(`${error.response.data.message}`);
+      }
+    };
+    // end amc dropdown
+    getAllChecklist();
+  }, []);
+  return (
+    <Fragment>
+      <Breadcrumb title="Transaction Type Listing" parent="Transaction" />
+      {/* Add Modal */}
+      <Modal isOpen={viewAddPage} show={viewAddPage.toString()} size="xl">
+        <ModalHeader
+          toggle={() => {
+            setViewAddPage(false);
+          }}
+        >
+          Add Transaction
+        </ModalHeader>
+        <ModalBody>
+          <AddTransactionType setViewAddPage={setViewAddPage} />
+        </ModalBody>
+      </Modal>
+      {/* Edit Modal */}
+      <Modal isOpen={viewEditPage} show={viewEditPage.toString()} size="xl">
+        <ModalHeader
+          toggle={() => {
+            setViewEditPage(false);
+          }}
+        >
+          Transaction Edit
+        </ModalHeader>
+        <ModalBody>
+          <EditTransactionType setViewEditPage={setViewEditPage} />
+        </ModalBody>
+      </Modal>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-sm-12">
+            <div className="card">
+              <div className="card-header d-flex justify-content-between">
+                <h5>Transaction Type Listing</h5>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    // for modal
+                    setViewAddPage(true);
+                  }}
+                >
+                  <i className="fa fa-plus mr-1"></i> Add Transaction Type
+                </button>
+              </div>
+              <div className="table-responsive">
+                <table className="table  ">
+                  <thead>
+                    <tr>
+                      {/* {UsersTableHeader.map((items,i) => 
+                                                      <th key={i}>{items}</th>
+                                                  )} */}
+
+                      <th>Txn Type </th>
+                      <th>Transaction type</th>
+                      <th>Active</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {data &&
+                      data.map((item, i) => (
+                        <tr key={i}>
+                          <td>{item.txn_type}</td>
+                          <td>{item.transaction_type}</td>
+                          <td>
+                            <span className="status-icon bg-success"></span>
+                            {item.active}
+                          </td>
+
+                          <td>
+                            {/* <i className="fa fa-pencil" style={{ width: 35, fontSize: 16, padding: 11, color: 'rgb(40, 167, 69)' }}></i> */}
+
+                            <i
+                              className="fa fa-pencil"
+                              style={{
+                                width: 35,
+                                fontSize: 16,
+                                padding: 11,
+                                color: "#FF9F40",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                // for modal
+                                setViewEditPage(true);
+                                sessionStorage.setItem(
+                                  "selectedTransactionType",
+                                  JSON.stringify(item)
+                                );
+                              }}
+                            ></i>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+                {data.length == 0 && (
+                  <p className="text-center mt-4 mb-2">
+                    There are no records to display
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Fragment>
+  );
+}

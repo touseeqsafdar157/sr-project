@@ -1,0 +1,25 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/react
+# Edit at https://www.toptal.com/developers/gitignore?templates=react
+
+### react ###
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+
+bower_components
+
+*.sublime*
+.vscode
+psd
+thumb
+sketch
+
+# End of https://www.toptal.com/developers/gitignore/api/react
+node_modules
+build
+cypress
+cypress.json
+__test__
